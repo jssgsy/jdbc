@@ -66,4 +66,38 @@ public class JdbcTest {
         }
     }
 
+    /**
+     * 测试jdbc的事务.重点：所谓事务没提交，即所执行的sql语句不会对数据库有任何更改，相当于没有执行sql语句一样。
+     *  jdbc默认处于auto-commit模式，即自动提交事务。可通过con.setAutorCommit(false)控制。
+     *
+     *  这里的重点是事务何时提交，事务提交发生在Statement完成时。而Statement完成发生在：
+     *  1. 处于非auto-commit模式：
+     *          需要显示调用con.commit()或者rollback()方法，Statement完成；
+     *
+     *  2. 处于auto-commit
+     *          a. 对于Insert、Update、Delete和DDL语句, 一旦执行则Statement完成；
+     *          b. 对于Select statements, the statement is complete when the associated result set is closed.
+     *
+     *  具体参见setAutoCommit()方法
+     *
+     * @throws SQLException
+     */
+    @Test
+    public void transactionTest() throws SQLException {
+        Connection connection = JdbcUtil.getConnection();
+        connection.setAutoCommit(false);
+
+        //code which nedd a transaction
+        Statement stat = connection.createStatement();
+        String sql = "insert into test(id, name, age)values(200,'aaa',23)";//这里的sql不能有占位符
+        int affectedRows = stat.executeUpdate(sql);
+        System.out.println("受影响的行数： " + affectedRows);
+
+        /*
+         * 必须显示调用commit()或者rollback()方法，否则事务不会提交。
+         * 此时上述sql语句不会真的向数据库中插入记录。
+         */
+        connection.commit();
+
+    }
 }

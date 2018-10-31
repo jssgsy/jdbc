@@ -68,7 +68,7 @@ public class JdbcTest {
 
     /**
      * 测试jdbc的事务.重点：所谓事务没提交，即所执行的sql语句不会对数据库有任何更改，相当于没有执行sql语句一样。
-     *  jdbc默认处于auto-commit模式，即自动提交事务。可通过con.setAutorCommit(false)控制。
+     *  jdbc默认处于auto-commit模式，即自动提交事务。可通过con.setAutoCommit(false)控制。
      *
      *  这里的重点是事务何时提交，事务提交发生在Statement完成时。而Statement完成发生在：
      *  1. 处于非auto-commit模式：
@@ -87,7 +87,7 @@ public class JdbcTest {
         Connection connection = JdbcUtil.getConnection();
         connection.setAutoCommit(false);
 
-        //code which nedd a transaction
+        //code which need a transaction
         Statement stat = connection.createStatement();
         String sql = "insert into test(id, name, age)values(200,'aaa',23)";//这里的sql不能有占位符
         int affectedRows = stat.executeUpdate(sql);
